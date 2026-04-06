@@ -58,13 +58,14 @@ echo "Result: $result"
 #     Result: Calculating...
 #     8
 get_sum() {
-  echo "Calculating..." >&2   # imp >&2 -----------------
-  echo $(($1 + $2))
+  echo "Calculating..." >&2   # Goes to terminal/console (by default)
+  echo "test message1 ..." >&2 # Goes to terminal/console (by default)
+  echo "test message2 ..." >&2 # Goes to terminal/console (by default)
+  echo "test message3 ..." >&2 # Goes to terminal/console (by default)
+  echo $(($1 + $2)) # returned as result goes to stdout → captured
 }
-
-result=$(get_sum 5 3)
+result=$(get_sum 5 3) # $(...) → captures only stdout (FD 1), stderr (FD 2) is NOT captured
 echo "abcdefghi ..... Result: $result"
-
 # >&2 means:
 # “send output to stderr (file descriptor 2) instead of stdout”
 # 0 → STDIN (input)
@@ -89,6 +90,11 @@ demo
 
 
 #=====================================================================
+# FD = File Descriptor
+# 0 → stdin (input)
+# 1 → stdout (output)
+# 2 → stderr (error)
+
 echo "======================================"
 # Correct usage (define FD 3)
 # 1. Redirect FD 3 to a file
@@ -104,15 +110,65 @@ log() {
 log "Debug message"
 
 # 3. Separate outputs (VERY POWERFUL)
-exec 3> success.log
-exec 4> error.log
+# custom FDs ==== FD = File Descriptor
+# Created FD 3 → success.log
+# Created FD 4 → error.log
+# Anything >2 is user-defined (custom)
+exec 3> success.log  # echo "Success message" >&3
+exec 4> error.log  # echo "Error message" >&4
 echo "Success message" >&3
 echo "Error message" >&4
 
 # 4. Save and restore stdout (advanced)
-exec 3>&1   # save stdout
+exec 3>&1   # save stdout - FD 3 now points to stdout (terminal), NOT the file anymore -Nothing is written to success.log
 echo "Normal output"
+# Create FD 3 as a copy of stdout (FD 1) -“backup of terminal output”
+# echo "Normal output" - Goes to stdout (terminal)
+
 exec 1> file.txt   # redirect stdout to file
+#now all normal output goes to file
 echo "This goes to file"
-exec 1>&3   # restore stdout
+
+exec 1>&3   # Restore stdout from FD 3 (backup)
 echo "Back to terminal"
+
+
+# tee -a = print + append to file
+echo "Hello" | tee -a success.log #takes input (from pipe '|') => Writes to both stdout(console) and file
+# -a flag = append mode
+# Without -a overwrites file every time
+echo "Hello" | tee success.log
+# With -a keeps adding (safe for logs)
+echo "Hello" | tee -a success.log
+# tee = split output into two places
+echo "Hello" | tee file.txt
+# Prints 'Hello' on screen And Saves 'Hello' in file.txt
+
+
+# some Important
+# Arguments
+#     $@ → all args (separately, best practice)
+#     $* → all args (as one string)
+#     $# → number of args
+
+# Exit / status
+#     $? → exit code of last command
+#     $$ → current script PID
+#     $! → PID of last background process
+
+# Script info
+#     $0 → script name
+#     $1, $2 ... → positional args
+
+# Last values
+#     $_ → last argument of previous command
+# echo hello world
+# echo $_ output:world
+
+# Example
+echo $0   # script name
+echo $1   # first arg
+echo $#   # count
+# count of positional arguments passed to script/function
+# script.sh a b c  Output:3
+echo $?   # last status
