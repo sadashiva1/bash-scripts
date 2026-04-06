@@ -1,4 +1,5 @@
 #!/bin/bash
+#shebang = composed of a sharp (#) and a bang (!)
 greet() {
   echo "Hello from function without params"
   local var="Local-variable-inside-function"
@@ -10,7 +11,7 @@ add() {
   echo "function with parameters.. Sum: $sum"
 }
 greet
-add 5 3
+add 5 3P
 
 print_all() {
   echo "All args: $@"
