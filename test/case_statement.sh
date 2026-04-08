@@ -1,5 +1,4 @@
 #!/bin/bash
-
 # 1. Basic case
 case $var in
   start)
@@ -12,7 +11,6 @@ case $var in
     echo "Unknown option"
     ;;
 esac
-
 # 2. Multiple patterns (OR condition)
 case $var in
   start|run|go)
@@ -35,7 +33,6 @@ case $file in
     echo "Other file"
     ;;
 esac
-
 # 4. Character matching
 case $char in
   [a-z])
