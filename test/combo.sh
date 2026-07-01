@@ -11,7 +11,7 @@ add() {
   echo "function with parameters.. Sum: $sum"
 }
 greet
-add 5 3P
+add 5 3
 #--------------------------------------------------
 print_all() {
   echo "All args: $@"
